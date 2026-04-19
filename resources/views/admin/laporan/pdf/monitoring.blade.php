@@ -192,13 +192,13 @@
         <div class="line"></div>
 
         <div class="judul">
-            <h4>LAPORAN MONITORING BANTUAN TAHUN {{ $tahun }}</h4>
+            <h4>LAPORAN MONITORING BANTUAN PERIODE {{ \Carbon\Carbon::parse($tanggalMulai)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($tanggalSelesai)->format('d/m/Y') }}</h4>
         </div>
 
         <table class="info-table">
             <tr>
-                <td width="150">Tahun Laporan</td>
-                <td>: {{ $tahun }}</td>
+                <td width="150">Periode Laporan</td>
+                <td>: {{ \Carbon\Carbon::parse($tanggalMulai)->format('d F Y') }} s/d {{ \Carbon\Carbon::parse($tanggalSelesai)->format('d F Y') }}</td>
             </tr>
             <tr>
                 <td>Tanggal Cetak</td>

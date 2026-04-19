@@ -21,29 +21,46 @@ class LaporanController extends Controller
     }
 
     /**
-     * Generate Laporan Penerima Bantuan by year
+     * Generate Laporan Penerima Bantuan by year or date range
      */
     public function laporanPenerimaBantuan(Request $request)
     {
-        $request->validate([
-            'tahun' => 'required|integer|min:2020|max:2100'
-        ]);
-
-        $tahun = $request->tahun;
-
-        // Get all penerima with their related data
-        $penerima = Penerima::with(['bantuan', 'penyaluranBantuan.jadwalPenyaluran', 'calonPenerima'])
-            ->whereHas('penyaluranBantuan', function ($query) use ($tahun) {
-                $query->whereYear('tanggal', $tahun);
-            })
-            ->get();
+        $filterType = $request->filter_type ?? 'tahun';
+        
+        if ($filterType === 'periode') {
+            $request->validate([
+                'tanggal_mulai' => 'required|date',
+                'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai'
+            ]);
+            $tanggalMulai = $request->tanggal_mulai;
+            $tanggalSelesai = $request->tanggal_selesai;
+            
+            $penerima = Penerima::with(['bantuan', 'penyaluranBantuan.jadwalPenyaluran', 'calonPenerima'])
+                ->whereHas('penyaluranBantuan', function ($query) use ($tanggalMulai, $tanggalSelesai) {
+                    $query->whereBetween('tanggal', [$tanggalMulai, $tanggalSelesai]);
+                })
+                ->get();
+        } else {
+            $request->validate([
+                'tahun' => 'required|integer|min:2020|max:2100'
+            ]);
+            $tahun = $request->tahun;
+            $tanggalMulai = $tahun . '-01-01';
+            $tanggalSelesai = $tahun . '-12-31';
+            
+            $penerima = Penerima::with(['bantuan', 'penyaluranBantuan.jadwalPenyaluran', 'calonPenerima'])
+                ->whereHas('penyaluranBantuan', function ($query) use ($tahun) {
+                    $query->whereYear('tanggal', $tahun);
+                })
+                ->get();
+        }
 
         $totalPenerima = $penerima->count();
         $totalBantuan = $penerima->sum(function ($item) {
             return $item->bantuan ? $item->bantuan->nilai : 0;
         });
 
-        return view('admin.laporan.laporan_penerima', compact('penerima', 'tahun', 'totalPenerima', 'totalBantuan'));
+        return view('admin.laporan.laporan_penerima', compact('penerima', 'tanggalMulai', 'tanggalSelesai', 'totalPenerima', 'totalBantuan'));
     }
 
     /**
@@ -51,50 +68,82 @@ class LaporanController extends Controller
      */
     public function exportPdfPenerimaBantuan(Request $request)
     {
-        $request->validate([
-            'tahun' => 'required|integer|min:2020|max:2100'
-        ]);
-
-        $tahun = $request->tahun;
-
-        // Get all penerima with their related data
-        $penerima = Penerima::with(['bantuan', 'penyaluranBantuan.jadwalPenyaluran', 'calonPenerima'])
-            ->whereHas('penyaluranBantuan', function ($query) use ($tahun) {
-                $query->whereYear('tanggal', $tahun);
-            })
-            ->get();
+        // Support both year and date range parameters
+        if ($request->has('tanggal_mulai') && $request->has('tanggal_selesai')) {
+            $request->validate([
+                'tanggal_mulai' => 'required|date',
+                'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai'
+            ]);
+            $tanggalMulai = $request->tanggal_mulai;
+            $tanggalSelesai = $request->tanggal_selesai;
+            
+            $penerima = Penerima::with(['bantuan', 'penyaluranBantuan.jadwalPenyaluran', 'calonPenerima'])
+                ->whereHas('penyaluranBantuan', function ($query) use ($tanggalMulai, $tanggalSelesai) {
+                    $query->whereBetween('tanggal', [$tanggalMulai, $tanggalSelesai]);
+                })
+                ->get();
+        } else {
+            $request->validate([
+                'tahun' => 'required|integer|min:2020|max:2100'
+            ]);
+            $tahun = $request->tahun;
+            $tanggalMulai = $tahun . '-01-01';
+            $tanggalSelesai = $tahun . '-12-31';
+            
+            $penerima = Penerima::with(['bantuan', 'penyaluranBantuan.jadwalPenyaluran', 'calonPenerima'])
+                ->whereHas('penyaluranBantuan', function ($query) use ($tahun) {
+                    $query->whereYear('tanggal', $tahun);
+                })
+                ->get();
+        }
 
         $totalPenerima = $penerima->count();
         $totalBantuan = $penerima->sum(function ($item) {
             return $item->bantuan ? $item->bantuan->nilai : 0;
         });
 
-        $pdf = \PDF::loadView('admin.laporan.pdf.penerima', compact('penerima', 'tahun', 'totalPenerima', 'totalBantuan'))
+        $pdf = \PDF::loadView('admin.laporan.pdf.penerima', compact('penerima', 'tanggalMulai', 'tanggalSelesai', 'totalPenerima', 'totalBantuan'))
             ->setPaper('a4', 'landscape');
 
-        return $pdf->stream('laporan-penerima-bantuan-' . $tahun . '.pdf');
+        return $pdf->stream('laporan-penerima-bantuan-' . date('Ymd', strtotime($tanggalMulai)) . '-' . date('Ymd', strtotime($tanggalSelesai)) . '.pdf');
     }
 
     /**
-     * Generate Laporan Monitoring by year
+     * Generate Laporan Monitoring by year or date range
      */
     public function laporanMonitoring(Request $request)
     {
-        $request->validate([
-            'tahun' => 'required|integer|min:2020|max:2100'
-        ]);
-
-        $tahun = $request->tahun;
-
-        // Get all monitoring data with their related data
-        $monitoring = Monitoring::with(['penerima.calonPenerima', 'penerima.bantuan', 'pendamping'])
-            ->whereYear('tanggal_monitoring', $tahun)
-            ->orderBy('tanggal_monitoring', 'desc')
-            ->get();
+        $filterType = $request->filter_type_monitoring ?? 'tahun';
+        
+        if ($filterType === 'periode') {
+            $request->validate([
+                'tanggal_mulai' => 'required|date',
+                'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai'
+            ]);
+            $tanggalMulai = $request->tanggal_mulai;
+            $tanggalSelesai = $request->tanggal_selesai;
+            
+            $monitoring = Monitoring::with(['penerima.calonPenerima', 'penerima.bantuan', 'pendamping'])
+                ->whereBetween('tanggal_monitoring', [$tanggalMulai, $tanggalSelesai])
+                ->orderBy('tanggal_monitoring', 'desc')
+                ->get();
+        } else {
+            $request->validate([
+                'tahun' => 'required|integer|min:2020|max:2100'
+            ]);
+            $tahun = $request->tahun;
+            $tanggalMulai = $tahun . '-01-01';
+            $tanggalSelesai = $tahun . '-12-31';
+            
+            $monitoring = Monitoring::with(['penerima.calonPenerima', 'penerima.bantuan', 'pendamping'])
+                ->whereYear('tanggal_monitoring', $tahun)
+                ->orderBy('tanggal_monitoring', 'desc')
+                ->get();
+        }
 
         $totalMonitoring = $monitoring->count();
 
-        return view('admin.laporan.laporan_monitoring', compact('monitoring', 'tahun', 'totalMonitoring'));
+        return view('admin.laporan.laporan_monitoring', compact('monitoring', 'tanggalMulai', 'tanggalSelesai', 'totalMonitoring'));
     }
 
     /**
@@ -102,24 +151,39 @@ class LaporanController extends Controller
      */
     public function exportPdfMonitoring(Request $request)
     {
-        $request->validate([
-            'tahun' => 'required|integer|min:2020|max:2100'
-        ]);
-
-        $tahun = $request->tahun;
-
-        // Get all monitoring data with their related data
-        $monitoring = Monitoring::with(['penerima.calonPenerima', 'penerima.bantuan', 'pendamping'])
-            ->whereYear('tanggal_monitoring', $tahun)
-            ->orderBy('tanggal_monitoring', 'desc')
-            ->get();
+        // Support both year and date range parameters
+        if ($request->has('tanggal_mulai') && $request->has('tanggal_selesai')) {
+            $request->validate([
+                'tanggal_mulai' => 'required|date',
+                'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai'
+            ]);
+            $tanggalMulai = $request->tanggal_mulai;
+            $tanggalSelesai = $request->tanggal_selesai;
+            
+            $monitoring = Monitoring::with(['penerima.calonPenerima', 'penerima.bantuan', 'pendamping'])
+                ->whereBetween('tanggal_monitoring', [$tanggalMulai, $tanggalSelesai])
+                ->orderBy('tanggal_monitoring', 'desc')
+                ->get();
+        } else {
+            $request->validate([
+                'tahun' => 'required|integer|min:2020|max:2100'
+            ]);
+            $tahun = $request->tahun;
+            $tanggalMulai = $tahun . '-01-01';
+            $tanggalSelesai = $tahun . '-12-31';
+            
+            $monitoring = Monitoring::with(['penerima.calonPenerima', 'penerima.bantuan', 'pendamping'])
+                ->whereYear('tanggal_monitoring', $tahun)
+                ->orderBy('tanggal_monitoring', 'desc')
+                ->get();
+        }
 
         $totalMonitoring = $monitoring->count();
 
-        $pdf = \PDF::loadView('admin.laporan.pdf.monitoring', compact('monitoring', 'tahun', 'totalMonitoring'))
+        $pdf = \PDF::loadView('admin.laporan.pdf.monitoring', compact('monitoring', 'tanggalMulai', 'tanggalSelesai', 'totalMonitoring'))
             ->setPaper('a4', 'landscape');
 
-        return $pdf->stream('laporan-monitoring-' . $tahun . '.pdf');
+        return $pdf->stream('laporan-monitoring-' . date('Ymd', strtotime($tanggalMulai)) . '-' . date('Ymd', strtotime($tanggalSelesai)) . '.pdf');
     }
 
     /**

@@ -88,20 +88,21 @@
                 @csrf
 
                 @if ($errors->any())
-                    <div class="bg-red-50 border-2 border-red-200 rounded-xl p-4">
-                        <div class="flex">
-                            <div class="flex-shrink-0">
-                                <svg class="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm text-red-800">
-                                    {{ $errors->first('username') }}
-                                </p>
-                            </div>
+                <div class="bg-red-50 border-2 border-red-200 rounded-xl p-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-red-800">
+                                {{ $errors->first('username') }}
+                            </p>
                         </div>
                     </div>
+                </div>
                 @endif
 
                 <!-- Username Field -->
@@ -150,7 +151,7 @@
                 </button>
 
                 <!-- Register Link -->
-                <div class="text-center pt-4">
+                {{-- <div class="text-center pt-4">
                     <p class="text-sm text-gray-600">
                         Belum punya akun?
                         <a href="#"
@@ -158,7 +159,7 @@
                             Daftar sekarang
                         </a>
                     </p>
-                </div>
+                </div> --}}
             </form>
 
             <!-- Footer -->

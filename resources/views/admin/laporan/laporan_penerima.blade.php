@@ -17,10 +17,10 @@
                 Kembali ke Laporan
             </a>
             <h2 class="text-2xl font-bold text-gray-800">Laporan Penerima Bantuan</h2>
-            <p class="text-gray-600">Tahun {{ $tahun }}</p>
+            <p class="text-gray-600">Periode: {{ \Carbon\Carbon::parse($tanggalMulai)->format('d/m/Y') }} s/d {{ \Carbon\Carbon::parse($tanggalSelesai)->format('d/m/Y') }}</p>
         </div>
         <div class="flex gap-2">
-            <a href="{{ route('admin.laporan.penerima-bantuan.pdf', ['tahun' => $tahun]) }}" target="_blank"
+            <a href="{{ route('admin.laporan.penerima-bantuan.pdf', ['tanggal_mulai' => $tanggalMulai, 'tanggal_selesai' => $tanggalSelesai]) }}" target="_blank"
                 class="inline-flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-600 text-white py-2.5 px-4 rounded-lg hover:from-red-600 hover:to-red-700 transition-all duration-200 font-medium text-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -162,8 +162,7 @@
         @if($penerima->count() > 0)
         <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
             <p class="text-sm text-gray-600">
-                Menampilkan <span class="font-semibold">{{ $penerima->count() }}</span> data penerima bantuan tahun {{
-                $tahun }}
+                Menampilkan <span class="font-semibold">{{ $penerima->count() }}</span> data penerima bantuan periode {{ \Carbon\Carbon::parse($tanggalMulai)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($tanggalSelesai)->format('d/m/Y') }}
             </p>
         </div>
         @endif

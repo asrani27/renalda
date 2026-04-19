@@ -30,13 +30,38 @@
                 <p class="text-gray-600 text-sm mb-4">Laporan lengkap penerima bantuan beserta detail penyaluran</p>
                 
                 <form action="{{ route('admin.laporan.penerima-bantuan') }}" method="GET" class="space-y-3">
-                    <div>
+                    <div class="mb-3">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Berdasarkan</label>
+                        <div class="flex gap-2">
+                            <label class="flex items-center">
+                                <input type="radio" name="filter_type" value="tahun" checked class="mr-2"> Pertahun
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="filter_type" value="periode" class="mr-2"> Periode
+                            </label>
+                        </div>
+                    </div>
+                    <div id="filter_tahun">
                         <label for="tahun" class="block text-sm font-medium text-gray-700 mb-1">Pilih Tahun</label>
                         <select name="tahun" id="tahun" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm">
                             @foreach($years as $year)
                                 <option value="{{ $year }}" {{ $year == date('Y') ? 'selected' : '' }}>{{ $year }}</option>
                             @endforeach
                         </select>
+                    </div>
+                    <div id="filter_periode" class="hidden">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label for="tanggal_mulai" class="block text-sm font-medium text-gray-700 mb-1">Tanggal Mulai</label>
+                                <input type="date" name="tanggal_mulai" id="tanggal_mulai" value="{{ date('Y-01-01') }}" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm">
+                            </div>
+                            <div>
+                                <label for="tanggal_selesai" class="block text-sm font-medium text-gray-700 mb-1">Tanggal Selesai</label>
+                                <input type="date" name="tanggal_selesai" id="tanggal_selesai" value="{{ date('Y-12-31') }}" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm">
+                            </div>
+                        </div>
                     </div>
                     <button type="submit" class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white py-2.5 px-4 rounded-lg hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200 font-medium text-sm flex items-center justify-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -45,6 +70,14 @@
                         Lihat Laporan
                     </button>
                 </form>
+                <script>
+                    document.querySelectorAll('input[name="filter_type"]').forEach(function(radio) {
+                        radio.addEventListener('change', function() {
+                            document.getElementById('filter_tahun').classList.toggle('hidden', this.value !== 'tahun');
+                            document.getElementById('filter_periode').classList.toggle('hidden', this.value !== 'periode');
+                        });
+                    });
+                </script>
             </div>
         </div>
 
@@ -88,13 +121,38 @@
                 <p class="text-gray-600 text-sm mb-4">Laporan monitoring dan perkembangan usaha penerima</p>
                 
                 <form action="{{ route('admin.laporan.monitoring') }}" method="GET" class="space-y-3">
-                    <div>
+                    <div class="mb-3">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Berdasarkan</label>
+                        <div class="flex gap-2">
+                            <label class="flex items-center">
+                                <input type="radio" name="filter_type_monitoring" value="tahun" checked class="mr-2"> Pertahun
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="filter_type_monitoring" value="periode" class="mr-2"> Periode
+                            </label>
+                        </div>
+                    </div>
+                    <div id="filter_tahun_monitoring">
                         <label for="tahun_monitoring" class="block text-sm font-medium text-gray-700 mb-1">Pilih Tahun</label>
                         <select name="tahun" id="tahun_monitoring" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
                             @foreach($monitoringYears as $year)
                                 <option value="{{ $year }}" {{ $year == date('Y') ? 'selected' : '' }}>{{ $year }}</option>
                             @endforeach
                         </select>
+                    </div>
+                    <div id="filter_periode_monitoring" class="hidden">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label for="tanggal_mulai_monitoring" class="block text-sm font-medium text-gray-700 mb-1">Tanggal Mulai</label>
+                                <input type="date" name="tanggal_mulai" id="tanggal_mulai_monitoring" value="{{ date('Y-01-01') }}" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                            </div>
+                            <div>
+                                <label for="tanggal_selesai_monitoring" class="block text-sm font-medium text-gray-700 mb-1">Tanggal Selesai</label>
+                                <input type="date" name="tanggal_selesai" id="tanggal_selesai_monitoring" value="{{ date('Y-12-31') }}" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                            </div>
+                        </div>
                     </div>
                     <button type="submit" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-2.5 px-4 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 font-medium text-sm flex items-center justify-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -103,6 +161,14 @@
                         Lihat Laporan
                     </button>
                 </form>
+                <script>
+                    document.querySelectorAll('input[name="filter_type_monitoring"]').forEach(function(radio) {
+                        radio.addEventListener('change', function() {
+                            document.getElementById('filter_tahun_monitoring').classList.toggle('hidden', this.value !== 'tahun');
+                            document.getElementById('filter_periode_monitoring').classList.toggle('hidden', this.value !== 'periode');
+                        });
+                    });
+                </script>
             </div>
         </div>
 

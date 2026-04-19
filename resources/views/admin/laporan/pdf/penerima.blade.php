@@ -194,13 +194,15 @@
         <div class="line"></div>
 
         <div class="judul">
-            <h4>LAPORAN PENERIMA BANTUAN TAHUN {{ $tahun }}</h4>
+            <h4>LAPORAN PENERIMA BANTUAN PERIODE {{ \Carbon\Carbon::parse($tanggalMulai)->format('d/m/Y') }} - {{
+                \Carbon\Carbon::parse($tanggalSelesai)->format('d/m/Y') }}</h4>
         </div>
 
         <table class="info-table">
             <tr>
-                <td width="150">Tahun Laporan</td>
-                <td>: {{ $tahun }}</td>
+                <td width="150">Periode Laporan</td>
+                <td>: {{ \Carbon\Carbon::parse($tanggalMulai)->format('d F Y') }} s/d {{
+                    \Carbon\Carbon::parse($tanggalSelesai)->format('d F Y') }}</td>
             </tr>
             <tr>
                 <td>Tanggal Cetak</td>
@@ -224,14 +226,14 @@
         <table>
             <thead>
                 <tr>
-                    <th width="30">No</th>
-                    <th width="150">Nama Penerima</th>
-                    <th width="120">NIK</th>
-                    <th width="150">Usaha</th>
+                    <th>No</th>
+                    <th>Nama Penerima</th>
+                    <th>NIK</th>
+                    <th>Usaha</th>
                     <th>Jenis Bantuan</th>
-                    <th width="120">Nilai Bantuan</th>
-                    <th width="100">Tgl Penyaluran</th>
-                    <th width="100">Status</th>
+                    <th>Nilai Bantuan</th>
+                    <th>Tgl Penyaluran</th>
+                    <th>Status</th>
                 </tr>
             </thead>
 
