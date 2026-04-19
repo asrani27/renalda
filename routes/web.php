@@ -114,6 +114,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/penerima-bantuan/pdf', [LaporanController::class, 'exportPdfPenerimaBantuan'])->name('penerima-bantuan.pdf');
         Route::get('/monitoring', [LaporanController::class, 'laporanMonitoring'])->name('monitoring');
         Route::get('/monitoring/pdf', [LaporanController::class, 'exportPdfMonitoring'])->name('monitoring.pdf');
+        Route::get('/pendamping', [LaporanController::class, 'laporanPendamping'])->name('pendamping');
+        Route::get('/pendamping/pdf', [LaporanController::class, 'exportPdfPendamping'])->name('pendamping.pdf');
         Route::post('/surat-pernyataan', [LaporanController::class, 'generateSuratPernyataan'])->name('surat-pernyataan');
     });
 });

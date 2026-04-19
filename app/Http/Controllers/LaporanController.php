@@ -7,6 +7,7 @@ use App\Models\Penerima;
 use App\Models\PenyaluranBantuan;
 use App\Models\Bantuan;
 use App\Models\Monitoring;
+use App\Models\Pendamping;
 
 class LaporanController extends Controller
 {
@@ -252,5 +253,58 @@ class LaporanController extends Controller
             ->setPaper('a4', 'portrait');
 
         return $pdf->stream('surat-pernyataan-' . str_replace(' ', '-', $data['nama']) . '.pdf');
+    }
+
+    /**
+     * Generate Laporan Data Pendamping
+     */
+    public function laporanPendamping(Request $request)
+    {
+        $search = $request->input('search');
+        
+        $pendamping = Pendamping::with('user')
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('nama', 'like', '%' . $search . '%')
+                      ->orWhere('telp', 'like', '%' . $search . '%')
+                      ->orWhere('kecamatan', 'like', '%' . $search . '%');
+                });
+            })
+            ->orderBy('nama', 'asc')
+            ->paginate(20);
+
+        $totalPendamping = Pendamping::count();
+        $pendampingDenganAkun = Pendamping::whereHas('user')->count();
+
+        return view('admin.laporan.laporan_pendamping', compact('pendamping', 'totalPendamping', 'pendampingDenganAkun', 'search'));
+    }
+
+    /**
+     * Export Laporan Data Pendamping to PDF
+     */
+    public function exportPdfPendamping(Request $request)
+    {
+        $search = $request->input('search');
+        
+        $pendamping = Pendamping::with('user')
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('nama', 'like', '%' . $search . '%')
+                      ->orWhere('telp', 'like', '%' . $search . '%')
+                      ->orWhere('kecamatan', 'like', '%' . $search . '%');
+                });
+            })
+            ->orderBy('nama', 'asc')
+            ->get();
+
+        $totalPendamping = $pendamping->count();
+        $pendampingDenganAkun = $pendamping->filter(function ($item) {
+            return $item->user != null;
+        })->count();
+
+        $pdf = \PDF::loadView('admin.laporan.pdf.pendamping', compact('pendamping', 'totalPendamping', 'pendampingDenganAkun', 'search'))
+            ->setPaper('a4', 'landscape');
+
+        return $pdf->stream('laporan-data-pendamping-' . date('Ymd') . '.pdf');
     }
 }
