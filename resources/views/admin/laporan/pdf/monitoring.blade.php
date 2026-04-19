@@ -192,17 +192,19 @@
         <div class="line"></div>
 
         <div class="judul">
-            <h4>LAPORAN MONITORING BANTUAN PERIODE {{ \Carbon\Carbon::parse($tanggalMulai)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($tanggalSelesai)->format('d/m/Y') }}</h4>
+            <h4>LAPORAN MONITORING BANTUAN PERIODE {{ \Carbon\Carbon::parse($tanggalMulai)->format('d/m/Y') }} - {{
+                \Carbon\Carbon::parse($tanggalSelesai)->format('d/m/Y') }}</h4>
         </div>
 
         <table class="info-table">
             <tr>
                 <td width="150">Periode Laporan</td>
-                <td>: {{ \Carbon\Carbon::parse($tanggalMulai)->format('d F Y') }} s/d {{ \Carbon\Carbon::parse($tanggalSelesai)->format('d F Y') }}</td>
+                <td style="text-align: left">: {{ \Carbon\Carbon::parse($tanggalMulai)->format('d F Y') }} s/d {{
+                    \Carbon\Carbon::parse($tanggalSelesai)->format('d F Y') }}</td>
             </tr>
             <tr>
                 <td>Tanggal Cetak</td>
-                <td>: {{ \Carbon\Carbon::now()->format('d F Y') }}</td>
+                <td style="text-align: left">: {{ \Carbon\Carbon::now()->format('d F Y') }}</td>
             </tr>
         </table>
 
@@ -210,7 +212,7 @@
             <table>
                 <tr>
                     <td width="200"><strong>Total Monitoring</strong></td>
-                    <td>: {{ $totalMonitoring }} kunjungan</td>
+                    <td style="text-align: left">: {{ $totalMonitoring }} kunjungan</td>
                 </tr>
             </table>
         </div>
