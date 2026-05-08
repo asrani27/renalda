@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Data Penerima Bantuan')
+@section('title', 'Data Kriteria')
 
-@section('page-title', 'Data Penerima Bantuan')
+@section('page-title', 'Data Kriteria')
 
 @section('content')
 <div class="space-y-6">
@@ -41,12 +41,12 @@
 
     <!-- Header with Search and Create Button -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <form action="{{ route('admin.penerima.index') }}" method="GET" class="w-full sm:w-auto">
+        <form action="{{ route('admin.kriteria.index') }}" method="GET" class="w-full sm:w-auto">
             <div class="relative">
                 <input type="text" 
                        name="search" 
                        value="{{ request('search') }}" 
-                       placeholder="Cari nama penerima, nama bantuan, atau status..." 
+                       placeholder="Cari nama kriteria..." 
                        class="w-full sm:w-80 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none">
                 <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" 
                      fill="none" 
@@ -59,12 +59,12 @@
             </div>
         </form>
         
-        <a href="{{ route('admin.penerima.create') }}" 
+        <a href="{{ route('admin.kriteria.create') }}" 
            class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-lg hover:from-emerald-700 hover:to-emerald-800 transition-all duration-200 shadow-lg hover:shadow-xl">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
             </svg>
-            <span>Tambah Penerima</span>
+            <span>Tambah Kriteria</span>
         </a>
     </div>
 
@@ -75,77 +75,33 @@
                 <thead class="bg-gray-50 border-b border-gray-200">
                     <tr>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">No</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Nama Penerima</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">NIK</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Bantuan</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Tanggal Penyaluran</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Nama Kriteria</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Bobot (%)</th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
-                    @forelse($penerimas as $item)
+                    @forelse($kriteria as $item)
                         <tr class="hover:bg-gray-50 transition-colors">
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                {{ ($penerimas->currentPage() - 1) * $penerimas->perPage() + $loop->index + 1 }}
+                                {{ ($kriteria->currentpage() - 1) * $kriteria->perpage() + $loop->index + 1 }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900">{{ $item->calonPenerima->nama }}</div>
-                                <div class="text-xs text-gray-500">{{ $item->calonPenerima->usaha }}</div>
+                                <div class="text-sm font-medium text-gray-900">{{ $item->nama }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-700">{{ $item->calonPenerima->nik }}</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900">{{ $item->bantuan->nama }}</div>
-                                <div class="text-xs text-gray-500">Rp {{ number_format($item->bantuan->nilai, 0, ',', '.') }}</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                @if($item->status_penerima === 'Disetujui')
-                                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                        Disetujui
-                                    </span>
-                                @elseif($item->status_penerima === 'Ditolak')
-                                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                        Ditolak
-                                    </span>
-                                @else
-                                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                        Proses
-                                    </span>
-                                @endif
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-700">
-                                    {{ $item->tanggal_penyaluran ? $item->tanggal_penyaluran->format('d/m/Y') : '-' }}
+                                <div class="text-sm font-medium text-emerald-700">
+                                    {{ number_format($item->bobot, 2) }}%
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center gap-2">
-                                    <!-- Show Button -->
-                                    <a href="{{ route('admin.penerima.show', $item->id) }}" 
-                                       class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                                       title="Detail">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                        </svg>
-                                    </a>
                                     <!-- Edit Button -->
-                                    <a href="{{ route('admin.penerima.edit', $item->id) }}" 
+                                    <a href="{{ route('admin.kriteria.edit', $item->id) }}" 
                                        class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                                        title="Edit">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                        </svg>
-                                    </a>
-                                    
-                                    <!-- Bobot Kelayakan Button -->
-                                    <a href="{{ route('admin.bobotkelayakan.edit', $item->id) }}" 
-                                       class="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
-                                       title="Bobot Kelayakan">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
                                         </svg>
                                     </a>
                                     
@@ -162,13 +118,13 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="px-6 py-12 text-center">
+                            <td colspan="4" class="px-6 py-12 text-center">
                                 <div class="flex flex-col items-center">
                                     <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                     </svg>
-                                    <p class="text-gray-500 text-lg">Tidak ada data penerima bantuan</p>
-                                    <p class="text-gray-400 text-sm mt-1">Silakan tambahkan data penerima bantuan baru</p>
+                                    <p class="text-gray-500 text-lg">Tidak ada data kriteria</p>
+                                    <p class="text-gray-400 text-sm mt-1">Silakan tambahkan data kriteria baru</p>
                                 </div>
                             </td>
                         </tr>
@@ -178,12 +134,12 @@
         </div>
         
         <!-- Pagination -->
-        @if($penerimas->hasPages())
+        @if($kriteria->hasPages())
             <div class="px-6 py-4 border-t border-gray-200 flex justify-between items-center">
                 <div class="text-sm text-gray-700">
-                    Menampilkan {{ $penerimas->firstItem() }} sampai {{ $penerimas->lastItem() }} dari {{ $penerimas->total() }} data
+                    Menampilkan {{ $kriteria->firstItem() }} sampai {{ $kriteria->lastItem() }} dari {{ $kriteria->total() }} data
                 </div>
-                {{ $penerimas->appends(['search' => request('search')])->links() }}
+                {{ $kriteria->appends(['search' => request('search')])->links() }}
             </div>
         @endif
     </div>
@@ -200,13 +156,13 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                     </svg>
                 </div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">Hapus Data Penerima?</h3>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Hapus Data Kriteria?</h3>
                 <p class="text-gray-600">Data yang dihapus tidak dapat dikembalikan. Apakah Anda yakin ingin melanjutkan?</p>
             </div>
-            <form action="{{ route('admin.penerima.destroy', ':id') }}" method="POST" id="deleteForm">
+            <form action="{{ route('admin.kriteria.destroy', ':id') }}" method="POST" id="deleteForm">
                 @csrf
                 @method('DELETE')
-                <input type="hidden" name="id" id="deletePenerimaId">
+                <input type="hidden" name="id" id="deleteKriteriaId">
                 <div class="flex gap-3">
                     <button type="button" onclick="closeDeleteModal()" 
                             class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
@@ -225,7 +181,7 @@
 <script>
     // Delete Modal
     function confirmDelete(id) {
-        document.getElementById('deletePenerimaId').value = id;
+        document.getElementById('deleteKriteriaId').value = id;
         const form = document.getElementById('deleteForm');
         form.action = form.action.replace(':id', id);
         document.getElementById('deleteModal').classList.remove('hidden');

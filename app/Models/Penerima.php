@@ -44,4 +44,12 @@ class Penerima extends Model
     {
         return $this->hasMany(PenyaluranBantuan::class, 'penerima_id');
     }
+
+    /**
+     * Get the nilai kriteria for the penerima.
+     */
+    public function nilaiKriteria(): HasMany
+    {
+        return $this->hasMany(NilaiKriteria::class, 'penerima_id');
+    }
 }

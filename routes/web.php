@@ -12,6 +12,8 @@ use App\Http\Controllers\PenyaluranBantuanController;
 use App\Http\Controllers\SerahTerimaController;
 use App\Http\Controllers\MonitoringController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\KriteriaController;
+use App\Http\Controllers\BobotKelayakanController;
 
 Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
@@ -105,6 +107,23 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{monitoring}/edit', [MonitoringController::class, 'edit'])->name('edit');
         Route::put('/{monitoring}', [MonitoringController::class, 'update'])->name('update');
         Route::delete('/{monitoring}', [MonitoringController::class, 'destroy'])->name('destroy');
+    });
+
+    // Admin Kriteria CRUD Routes
+    Route::prefix('admin/kriteria')->name('admin.kriteria.')->group(function () {
+        Route::get('/', [KriteriaController::class, 'index'])->name('index');
+        Route::get('/create', [KriteriaController::class, 'create'])->name('create');
+        Route::post('/', [KriteriaController::class, 'store'])->name('store');
+        Route::get('/{kriteria}/edit', [KriteriaController::class, 'edit'])->name('edit');
+        Route::put('/{kriteria}', [KriteriaController::class, 'update'])->name('update');
+        Route::delete('/{kriteria}', [KriteriaController::class, 'destroy'])->name('destroy');
+    });
+
+    // Admin Bobot Kelayakan Routes
+    Route::prefix('admin/bobotkelayakan')->name('admin.bobotkelayakan.')->group(function () {
+        Route::get('/', [BobotKelayakanController::class, 'index'])->name('index');
+        Route::get('/{penerima}/edit', [BobotKelayakanController::class, 'edit'])->name('edit');
+        Route::put('/{penerima}', [BobotKelayakanController::class, 'update'])->name('update');
     });
 
     // Admin Laporan Routes
